@@ -4,3 +4,9 @@ VHDL can be a super verbose language at the best of times. These helpers are
 designed to ease the pain on a few of the more repitious VHDL coding constructs.
 
 Compile all files into a VHDL library "gen_util" to use.
+
+The Library is LGPL license. Go nuts with commercial usage. But contribute back
+at the same time!
+
+Peter Crosthwaite
+crosthwaite.peter@gmail.com
