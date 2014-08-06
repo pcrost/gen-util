@@ -1,0 +1,6 @@
+VHDL General Utility Library
+
+VHDL can be a super verbose language at the best of times. These helpers are
+designed to ease the pain on a few of the more repitious VHDL coding constructs.
+
+Compile all files into a VHDL library "gen_util" to use.
