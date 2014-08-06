@@ -18,7 +18,6 @@ package util is
 	type INT_ARRAY is array(natural range <>) of integer;	
 	
 		--determine if an int array contains an element. only valid with 0 based arrays
-		--TODO: figure out why for some reason ISIM pukes with a FATAL on this
 		function util_int_array_contains (a : INT_ARRAY; e : integer) return boolean;
 		--return the index of the first occurance of a particular element in an int array
 		--onyl valid with 0 based arrays
