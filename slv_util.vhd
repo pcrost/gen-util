@@ -16,7 +16,7 @@ package slv_util is
 
 	function util_length_req (A : integer) return integer;
 
-	--zero extend a std_logic_vector to a sepcified width
+	--zero extend a std_logic_vector to a specified width
 
 	function util_zero_ext_slv(a : std_logic_vector; width : integer) return std_logic_vector;
 	function util_zero_ext_slv(a : std_logic; width : integer) return std_logic_vector;
@@ -26,13 +26,13 @@ package slv_util is
 	function util_sign_ext_slv(a : std_logic_vector; width : integer) return std_logic_vector;
 	function util_sign_ext_slv(a : std_logic; width : integer) return std_logic_vector;
 
-	--return an std_logic_vector of all ones or all zeros
+	--return an std_logic_vector of all ones, all zeros or all don't-cares
 
 	function util_ones(w : integer) return std_logic_vector;
 	function util_zeros(w : integer) return std_logic_vector;
 	function util_dcs(w : integer) return std_logic_vector;
 
-	--determine if two std_logic vectors match subject to a set of dont cares
+	--determine if two std_logic vectors match subject to a set of don't cares
 	--The range of b must match or superset a. 
 	--The range of dont_care must match or superset a.
 
@@ -49,6 +49,7 @@ package slv_util is
 	--rebase a slv to be downto 0, rather than downto n where n is non-zero
 	function slv_dt0_slice (a : std_logic_vector) return std_logic_vector;
 
+        --do a don't care or function between two slvs
 	function util_dc_or_slv(a : std_logic_vector; b : std_logic_vector) return std_logic_vector;
 
 	--bit reverse a slv
