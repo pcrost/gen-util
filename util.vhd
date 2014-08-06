@@ -98,19 +98,11 @@ package body util is
 	end function;
 
 	function conv_std_logic (b : boolean) return std_logic is begin
-		if (b) then
-			return '1';
-		else
-			return '0';
-		end if;
+                return util_select_sl(b, '1', '0');
 	end function;
 
 	function conv_bool_to_integer (b : boolean) return integer is begin
-		if (b) then
-			return 1;
-		else
-			return 0;
-		end if;
+                return util_select_int(b, 1, 0);
 	end function;
 
 	function util_int_array_contains (a : INT_ARRAY; e : integer) return boolean is begin
