@@ -33,7 +33,7 @@ package util is
 	function util_select_slv(c : boolean; t_val : std_logic_vector; f_val : std_logic_vector) return std_logic_vector;
 	function util_select_str(c : boolean; t_val : string; f_val : string) return string;
 
-	--bundle and clock and reset together
+	--bundle a clock and reset together
 	type GCR is record
 		clk : std_logic;
 		rst : std_logic;
@@ -57,7 +57,7 @@ package util is
 
 	function util_dc_or(a : std_logic; b : std_logic) return std_logic;
 
-	-- Forces the integer to a power of 2, the next power of 2 higher then or equal to a
+	-- Forces the integer to a power of 2, the next power of 2 higher than or equal to a
 	function util_force_pow2(a : integer) return integer;
 
 end util;
