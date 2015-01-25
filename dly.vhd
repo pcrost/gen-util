@@ -55,11 +55,11 @@ begin
 
 	generate_pipe : for I in 1 to T generate
 
-		process (clk, rst) begin
+		process (clk) begin if (clk'event and clk = '1') then
+			pipe(I) <= pipe(I-1);
+
 			if (rst = '1') then
 				pipe(I) <= (others => DEFAULT);
-			elsif (clk'event and clk = '1') then
-				pipe(I) <= pipe(I-1);
 			end if;
 		end process;
 
