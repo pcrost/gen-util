@@ -23,17 +23,16 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 library gen_util;
 use gen_util.util.all;
 
---delay an N bit signal by T clock cycles
+--delay a signal by T clock cycles
 
 entity delay is
 	generic (
-		N : integer := 5;
 		T : integer := 2;
-		DEFAULT : std_logic := 'X'
+		DEFAULT : __TYPE__ := __DEFAULT__
 	);
 	port (
-		ipt : in std_logic_vector(N-1 downto 0);
-		opt : out std_logic_vector(N-1 downto 0);
+		ipt : in __TYPE__; 
+		opt : out __TYPE__;
 		vld_i : in std_logic := '1';
 		rdy_i : out std_logic;
 		vld_o : out std_logic;
@@ -47,14 +46,14 @@ architecture Behavioral of delay is
 	alias clk is clk_rst_GCR.clk;
 	alias rst is clk_rst_GCR.rst;
 
-	type PIPE_TYPE is array (T downto 0) of std_logic_vector(N-1 downto 0);
+	type PIPE_TYPE is array (T downto 0) of __TYPE__;
 	signal pipe : PIPE_TYPE;
 
 	signal vld_stages, rdy_stages : std_logic_vector(T downto 0);
 
 begin
 
-	pipe(0) <= ipt when vld_i = '1' else (others => DEFAULT);
+	pipe(0) <= ipt when vld_i = '1' else __DEFAULT__;
 	vld_stages(0) <= vld_i;
 	rdy_i <= rdy_stages(0);
 
@@ -73,11 +72,10 @@ begin
 			end if;
 
 			if (rst = '1') then
-				pipe(I) <= (others => DEFAULT);
+				pipe(I) <= __DEFAULT__;
 			end if;
 		end process;
 
 	end generate;
 
 end Behavioral;
-
