@@ -1,0 +1,6 @@
+%.vhdl: %.vhd.c
+	gcc -E -nostdinc -undef -P $< -o $@
+
+%.vhd.c: %.vhdx
+	hash_expand < $< > $@
+	cp $@ $@.debug
