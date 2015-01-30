@@ -38,16 +38,14 @@ entity delay is
 		rdy_i : out std_logic;
 		vld_o : out std_logic;
 		rdy_o : in std_logic := '1';
-		clk : in std_logic;
-		rst : in std_logic
-		--clk_rst_GCR : GCR
+		clk_rst_GCR : GCR
 	);
 end delay;
 
 architecture Behavioral of delay is
 
-	--alias clk is clk_rst_GCR.clk;
-	--alias rst is clk_rst_GCR.rst;
+	alias clk is clk_rst_GCR.clk;
+	alias rst is clk_rst_GCR.rst;
 
 	type PIPE_TYPE is array (T downto 0) of std_logic_vector(N-1 downto 0);
 	signal pipe : PIPE_TYPE;
