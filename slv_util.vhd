@@ -80,6 +80,9 @@ package slv_util is
 
 	function util_signed_negative(a : std_logic_vector) return boolean;
 
+    function util_slv_ffs(a : std_logic_vector) return integer;
+    function util_slv_fls(a : std_logic_vector) return integer;
+
 end slv_util;
 
 package body slv_util is
@@ -239,5 +242,23 @@ package body slv_util is
 	function util_signed_negative(a : std_logic_vector) return boolean is begin
 		return (a(a'left) = '1');
 	end;
+
+    function util_slv_ffs(a: std_logic_vector) return integer is begin
+		for I in a'range loop
+            if (a(I) = '1') then
+                return I;
+            end if;
+        end loop;
+        return -1;
+    end;
+
+    function util_slv_fls(a: std_logic_vector) return integer is begin
+		for I in a'reverse_range loop
+            if (a(I) = '1') then
+                return I;
+            end if;
+        end loop;
+        return -1;
+    end;
 
 end slv_util;
