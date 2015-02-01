@@ -1,0 +1,86 @@
+-------------------------------------------------------------------------------
+-- (C) P. Crosthwaite, University of Queensland (2010)
+
+--This library is free software; you can redistribute it and/or
+--modify it under the terms of the GNU Lesser General Public
+--License as published by the Free Software Foundation; either
+--version 3.0 of the License, or (at your option) any later version.
+
+--This library is distributed in the hope that it will be useful,
+--but WITHOUT ANY WARRANTY; without even the implied warranty of
+--MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+--Lesser General Public License for more details.
+
+--You should have received a copy of the GNU Lesser General Public
+--License along with this library.
+-------------------------------------------------------------------------------
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_ARITH.ALL;
+use IEEE.STD_LOGIC_UNSIGNED.ALL;
+
+library gen_util;
+use gen_util.util.all;
+
+--ring buffer a signal with T slots
+
+entity delay is
+	generic (
+		T : integer := 2;
+		DEFAULT : __TYPE__ := __DEFAULT__
+	);
+	port (
+		ipt : in __TYPE__;
+		opt : out __TYPE__;
+		vld_i : in std_logic := '1';
+		rdy_i : out std_logic;
+		vld_o : out std_logic;
+		rdy_o : in std_logic := '1';
+		clk_rst_GCR : GCR
+	);
+end delay;
+
+architecture Behavioral of delay is
+
+	alias clk is clk_rst_GCR.clk;
+	alias rst is clk_rst_GCR.rst;
+
+	type RING_TYPE is array (T downto 0) of __TYPE__;
+	signal ring : RING_TYPE;
+
+    signal rdy_i_s, vld_o_s : std_logic;
+
+    signal in_ptr, out_ptr : integer range(T-1 downto 0);
+    signal occ : std_logic_vector(T-1 downto 0);
+begin
+
+    rdy_i <= rdy_i_s;
+    vld_o <= vld_o_s;
+    opt <= ring(out_ptr);
+
+    rdy_i_s <= not occ(in_ptr);
+    vld_o_s <= occ(out_ptr);
+
+    process(clk) is begin if rising_edge(clk) then
+        for I in 0 to T-1 loop
+            if(occ(I) = '0') then
+                ring(I) <= ipt;
+            end if;
+        end loop;
+        if vld_i = '1' and rdy_i_s = '1' then
+            in_ptr <= (in_ptr + 1) mod T;
+            occ(in_ptr) <= '1';
+        end if
+        if vld_o_s = '1' and rdy_o = '1' then
+            out_ptr <= (out_ptr + 1) mod T;
+            occ(out_ptr) <= '0';
+        end if
+        if (rst = '1') then
+            in_ptr <= 0;
+            out_ptr <= 0;
+            occ <= (others => '0');
+        end if;
+    end if; end process;
+
+end Behavioral;
