@@ -1,6 +1,9 @@
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+
 %.vhdl: %.vhd.c
-	gcc -E -nostdinc -undef -P $< -o $@
+	gcc -E -nostdinc -undef -P -w $< -I$(SELF_DIR) -o $@
+	cp $@ $@.debug
 
 %.vhd.c: %.vhdx
-	hash_expand < $< > $@
+	$(SELF_DIR)/bin/hash-for < $< > $@
 	cp $@ $@.debug

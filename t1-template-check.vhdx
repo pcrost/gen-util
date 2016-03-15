@@ -1,0 +1,11 @@
+#ifndef __ENTITY__
+#error Must #define __ENTITY__ (to desired entity name)
+#endif
+
+#ifndef __TYPE__
+#error Must #define __TYPE__ (to a valid VHDL type)
+#endif
+
+#ifndef __DEFAULT__
+#error Must #define __DEFAULT__ (of type __TYPE__)
+#endif
