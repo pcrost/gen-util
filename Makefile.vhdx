@@ -1,5 +1,7 @@
 SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 
+test: $(patsubst %.vhdx,%.vhdl,$(wildcard tests/*.vhdx))
+
 %.vhdl: %.vhd.c
 	gcc -E -nostdinc -undef -P -w $< -I$(SELF_DIR) -o $@
 	cp $@ $@.debug

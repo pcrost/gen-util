@@ -1,0 +1,5 @@
+#define __ENTITY__ delay_integer
+#define __TYPE__ integer
+#define __DEFAULT__ 0
+
+#include <dly.vhdx>
