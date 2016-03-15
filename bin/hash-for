@@ -18,6 +18,20 @@
 #
 # ex 0 0 ex 0 B ex 1 1 ex 1 B
 #
+# Prefixing of suffixing the substitutable with _ will cause
+# automatic token pasting (which can be naughtily used to autogenerate
+# macros themselves). Tokens paste in the direction of the _. You can
+# paste both ways at once, E.g:
+#
+# #for A(X, Y) #define FOO_ _A BAR_ _A_ _BAZ
+# #endfor
+#
+# #define FOO_X BAR_X_BAZ
+# #define FOO_Y BAR_Y_BAZ
+#
+# If there are two consecutive substitutables then if either one (or both)
+# specifies a paste to the other, then the tokens will be pasted.
+#
 # Minimal effort gone into syntax checking
 
 import re
@@ -102,8 +116,26 @@ for line in sys.stdin:
                 obuf = obufs.pop()
                 find = finds.pop()
                 for r in replaces.pop():
+                    nextglue = False;
                     for t in obuf:
-                        obufs[-1].append(r if t == find else t)
+                        toadd = r;
+                        preglue = False;
+                        postglue = False;
+                        if (t == "_" + find + "_"):
+                            postglue = True;
+                            preglue = True;
+                        elif (t == find + "_"):
+                            postglue = True;
+                        elif (t == "_" + find):
+                            preglue = True;
+                        elif (t != find):
+                            toadd = t;
+
+                        if nextglue or preglue:
+                            obufs[-1][-1] += toadd;
+                        else:
+                            obufs[-1].append(toadd)
+                        nextglue = postglue
             elif token == "include":
                 state = "include"
                 obufs[-1].append("#include");
