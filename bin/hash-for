@@ -53,9 +53,18 @@ def parse_error(cond, expected, before):
 def is_keyword(token):
     return token == "#for" or token == "#endfor" or token == "(" or token == ")"
 
+def char_is_white(c):
+    return c == " " or c == "\t" or c == "\n" or c == "\r" or c == "\0"
+
+def string_is_white(st):
+    for c in st:
+        if not char_is_white(c):
+            return False
+    return True
+
 #Tokenization (lexical) rules
 #
-#   " ", newline, tabs and the ends of the string always delimit tokens
+#   sequences of " ", newline, tabs are one token with all other chars delimiting
 #   ) ( and , are always their own single char token
 #   sequences a-z, a-Z and _ are one token with all other chars delimiting
 #   sequences of all other chars not yet mentioned are one token
@@ -64,11 +73,12 @@ def is_keyword(token):
 def tokenize(st):
     ret = []
 
-    s = "white"
+    s = "none"
     for c in st:
-        if c == " " or c == "\t" or c == "\n" or c == "\r" or c == "\0":
+        if char_is_white(c):
             ct = "white"
-        elif str.isalnum(c) or c == "_":
+        #FIXME: Handle string literals properly
+        elif str.isalnum(c) or c == "_" or c == "\"":
             ct = "alpha"
         elif c == "(" or c == ")" or c == ",":
             ct = c
@@ -76,15 +86,14 @@ def tokenize(st):
             ct = "special"
 
         if s != ct:
-            if s != "white":
+            if (s != "none"):
                 ret.append(tok)
             s = ct
-            if s != "white":
-                tok = c
-        elif s != "white":
+            tok = c
+        else:
             tok += c
 
-    if s != "white":
+    if s != "none":
         ret.append(tok)
 
     return ret
@@ -94,11 +103,15 @@ for line in sys.stdin:
     #ditch comments
     linem = re.sub(r"--.*$", r"", line)
     #Keep leading whitespace on each line
-    obufs[-1].append(re.sub(r"^([ \t]*).*$", r"\1", line))
+    #obufs[-1].append(re.sub(r"^([ \t]*).*$", r"\1", line))
     if (state == "include"):
         state = "off";
     for token in tokenize(linem):
-        sys.stderr.write(token + "(" + state + ") ")
+        #sys.stderr.write(token + "(" + state + ") ")
+        if (string_is_white(token)):
+            if state == "off":
+                obufs[-1].append(token);
+            continue;
         qtoken = "\'" + token + "\'"
         if (state == "off") :
             if token == "#":
@@ -118,6 +131,8 @@ for line in sys.stdin:
                 for r in replaces.pop():
                     nextglue = False;
                     for t in obuf:
+                        if nextglue and string_is_white(t):
+                            continue;
                         toadd = r;
                         preglue = False;
                         postglue = False;
@@ -132,21 +147,16 @@ for line in sys.stdin:
                             toadd = t;
 
                         if nextglue or preglue:
+                            while (string_is_white(obufs[-1][-1])):
+                                del obufs[-1][-1]
                             obufs[-1][-1] += toadd;
                         else:
                             obufs[-1].append(toadd)
                         nextglue = postglue
-            elif token == "include":
-                state = "include"
-                obufs[-1].append("#include");
-            elif token == "#":
-                obufs[-1].append("#");
             else:
                 state = "off"
                 obufs[-1].append("#");
                 obufs[-1].append(token);
-        elif state == "include":
-            obufs[-1][-1] += token
         elif state == "find":
             parse_error(is_keyword(token), "identifier", qtoken)
             finds.append(token)
@@ -169,8 +179,6 @@ for line in sys.stdin:
             else:
                 parse_error(token != ",", "\',\' or \')\"", qtoken)
                 state = "replaces"
-    obufs[-1].append(0)
-    sys.stderr.write("\n")
 
 parse_error(state == "find", "identifier", "EOF")
 parse_error(state == "(", "\'(\'", "EOF")
@@ -178,7 +186,4 @@ parse_error(state == "replaces", "identifier or \')\'", "EOF")
 parse_error(len(obufs) != 1, "#endfor", "EOF")
 
 for token in obufs[-1]:
-    if token == 0:
-        print ""
-    else:
-        sys.stdout.write(token + " ")
+    sys.stdout.write(token)
