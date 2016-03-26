@@ -102,8 +102,10 @@ package body slv_util is
 	begin
 		if (width = a'length) then
 			return a;
-		else
+		elsif (width > a'length) then
 			return conv_std_logic_vector(0, width - a'length) & a;
+		else
+			return a(width - 1 downto 0);
 		end if;
 	end;
 
