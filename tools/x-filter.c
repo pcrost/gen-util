@@ -35,9 +35,12 @@ int open(const char *pathname, int flags, mode_t mode)
 
     fprintf(stderr, "intercepting open of: %s\n", pathname);
 
-    if ((memcmp(&pathname[strlen(pathname) - 5], ".vhdx", 5) &&
-         memcmp(&pathname[strlen(pathname) - 6], ".vhd.c", 6)) ||
-         fd == -1) {
+    if ((memcmp(&pathname[strlen(pathname) - 5], ".vhdx" , 5) &&
+         memcmp(&pathname[strlen(pathname) - 6], ".vhd.c", 6) &&
+         memcmp(&pathname[strlen(pathname) - 3], ".vx"   , 3) &&
+         memcmp(&pathname[strlen(pathname) - 4], ".v.c"  , 4) &&
+         memcmp(&pathname[strlen(pathname) - 2], ".x"    , 2)
+        ) || fd == -1) {
         fprintf(stderr, "normal open: %s\n", pathname);
         errno = open_errno;
         return fd;
