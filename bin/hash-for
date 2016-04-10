@@ -121,6 +121,7 @@ for line in sys.stdin:
         elif state == "#d":
             if token == "for":
                 state = "find"
+                finds.append([]);
                 replace = []
                 obufs.append([])
             elif token == "endfor":
@@ -133,18 +134,23 @@ for line in sys.stdin:
                     for t in obuf:
                         if nextglue and string_is_white(t):
                             continue;
-                        toadd = r;
-                        preglue = False;
-                        postglue = False;
-                        if (t == "_" + find + "_"):
-                            postglue = True;
-                            preglue = True;
-                        elif (t == find + "_"):
-                            postglue = True;
-                        elif (t == "_" + find):
-                            preglue = True;
-                        elif (t != find):
-                            toadd = t;
+                        fi = 0;
+                        for rv in r:
+                            toadd = rv;
+                            preglue = False;
+                            postglue = False;
+                            if (t == "_" + find[fi] + "_"):
+                                postglue = True;
+                                preglue = True;
+                            elif (t == find[fi] + "_"):
+                                postglue = True;
+                            elif (t == "_" + find[fi]):
+                                preglue = True;
+                            elif (t != find[fi]):
+                                toadd = t;
+                                fi = fi + 1;
+                                continue;
+                            break;
 
                         if nextglue or preglue:
                             while (string_is_white(obufs[-1][-1])):
@@ -159,24 +165,31 @@ for line in sys.stdin:
                 obufs[-1].append(token);
         elif state == "find":
             parse_error(is_keyword(token), "identifier", qtoken)
-            finds.append(token)
+            finds[-1].append(token)
             state = "("
         elif state == "(":
-            parse_error(token != "(", "\'(\'", qtoken)
-            state = "replaces"
+            if (token == ":"):
+                state = "find";
+            else:
+                parse_error(token != "(", "\'(\'", qtoken)
+                replace.append([]);
+                state = "replaces"
         elif state == "replaces":
             if token == ")":
                 replaces.append(replace)
                 state = "off"
             else:
                 parse_error(is_keyword(token), "identifier or \')\'", qtoken)
-                replace.append(token)
+                replace[-1].append(token)
                 state= ","
         elif state == ",":
-            if token == ")":
+            if (token == ":"):
+                state = "replaces"
+            elif token == ")":
                 replaces.append(replace)
                 state = "off"
             else:
+                replace.append([])
                 parse_error(token != ",", "\',\' or \')\"", qtoken)
                 state = "replaces"
 
