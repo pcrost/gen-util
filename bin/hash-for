@@ -101,7 +101,7 @@ def tokenize(st):
 for line in sys.stdin:
     line_nr += 1
     #ditch comments
-    linem = re.sub(r"--.*$", r"", line)
+    linem = re.sub(r"//.*$", r"", line)
     #Keep leading whitespace on each line
     #obufs[-1].append(re.sub(r"^([ \t]*).*$", r"\1", line))
     if (state == "include"):
